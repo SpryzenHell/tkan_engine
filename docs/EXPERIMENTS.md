@@ -19,9 +19,9 @@ The purpose of this experiment is to test nonlinear representation and temporal 
 ## LOB prediction smoke test
 
 The current local 12,000-event smoke run achieved:
-- test MSE: 5.9931 bps squared,
-- test RMSE: 2.4481 bps,
-- test IC: -0.00337.
+- test MSE: 5.2227 bps squared,
+- test RMSE: 2.2853 bps,
+- test IC: 0.00215.
 
 This is a baseline engineering smoke test on the synthetic generator, not evidence of alpha.
 
@@ -32,8 +32,8 @@ Current local CPU model benchmark:
 - sequence length: 16
 - features: 18
 - steps: 20
-- throughput: 3,415.81 samples/s
-- batch latency: 2.342 ms
+- throughput: 4,818.03 samples/s
+- batch latency: 1.660 ms
 - parameters: 7,715
 
 Current local DDP correctness test:

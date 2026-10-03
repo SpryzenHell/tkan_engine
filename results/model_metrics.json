@@ -4,9 +4,9 @@
   "train_sequences": 9574,
   "test_sequences": 2394,
   "target_units": "basis points per event",
-  "test_mse_bps2": 5.993121147155762,
-  "test_rmse_bps": 2.4480852001422995,
-  "test_information_coefficient": -0.003366674552945771,
+  "test_mse_bps2": 5.222701072692871,
+  "test_rmse_bps": 2.285322969011792,
+  "test_information_coefficient": 0.002151626963826053,
   "device": "cpu",
   "world_size": 1,
   "features": 15

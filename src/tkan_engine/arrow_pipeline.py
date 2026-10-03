@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable
 
 import numpy as np
@@ -111,6 +112,14 @@ def process_batches(batches: Iterable):
         selected_rows=selected,
         checksum=checksum,
     )
+
+
+def scan_parquet(path: str | Path, batch_size: int = 1_000_000, columns: list[str] | None = None):
+    """Stream a Parquet dataset as Arrow RecordBatches."""
+    require_arrow()
+    import pyarrow.dataset as ds
+    dataset = ds.dataset(str(path), format="parquet")
+    return dataset.scanner(columns=columns, batch_size=batch_size).to_batches()
 
 
 def synthetic_arrow_stream(

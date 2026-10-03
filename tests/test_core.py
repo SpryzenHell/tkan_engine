@@ -71,3 +71,17 @@ def test_optional_arrow_message():
             arrow_pipeline.require_arrow()
         except RuntimeError as exc:
             assert "pyarrow" in str(exc)
+
+def test_arrow_q_helpers_when_available():
+    import pytest
+    pa = pytest.importorskip("pyarrow")
+    from tkan_engine import arrow_pipeline as ap
+    table = pa.table({"x": [1.0, 2.0, 3.0], "g": ["a", "a", "b"]})
+    filtered = ap.q_where(table, ap.pc.greater(table["x"], 1.0))
+    assert filtered.num_rows == 2
+    selected = ap.q_select(filtered, ["x"])
+    assert selected.column_names == ["x"]
+    within = ap.q_within(table, "x", 1.0, 2.0)
+    assert within.num_rows == 2
+    grouped = ap.q_by(table, ["g"], [("x", "mean")])
+    assert grouped.num_rows == 2

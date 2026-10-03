@@ -1,4 +1,4 @@
-Gloo Rank 1 connected to 1 peer rank.
-Gloo Rank 0 connected to 1 peer rank.
-rank 0: device=cpu world_size=2 history=[{"epoch":1,"loss":0.013368460349738598}]
-rank 1: device=cpu world_size=2 history=[{"epoch":1,"loss":0.013368460349738598}]
+Gloo Rank 0 is connected to 1 peer rank.
+Gloo Rank 1 is connected to 1 peer rank.
+rank 0: device=cpu world_size=2 history=[{"epoch":1,"loss":0.18092676997184753}]
+rank 1: device=cpu world_size=2 history=[{"epoch":1,"loss":0.18092676997184753}]

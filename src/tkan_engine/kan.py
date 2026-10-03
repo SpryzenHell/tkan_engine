@@ -315,7 +315,9 @@ class TemporalKANBlock(torch.nn.Module):
 
     @torch.no_grad()
     def update_grid(self, x: torch.Tensor) -> None:
-        self.kan.update_grid(x.reshape(-1, x.shape[-1]))
+        z = self.norm(x)
+        t = self.temporal(z.transpose(1, 2)).transpose(1, 2)[:, :x.shape[1]]
+        self.kan.update_grid(t.reshape(-1, t.shape[-1]))
 
 
 class TemporalKAN(torch.nn.Module):
