@@ -1,0 +1,11 @@
+{
+  "run_id": 37152777795,
+  "events": 5000000,
+  "batches": 20,
+  "batch_size": 250000,
+  "elapsed_s": 0.48123740400001225,
+  "events_per_s": 10389882.329262737,
+  "selected_rows": 5000000,
+  "checksum": 25165450.69060454,
+  "environment": "GitHub Actions ubuntu-24.04, Python 3.12"
+}
