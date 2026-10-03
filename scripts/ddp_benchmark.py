@@ -45,7 +45,11 @@ device = torch.device(f"cuda:{local_rank}" if torch.cuda.is_available() else "cp
 dataset = make_fixed_dataset(a.events, a.seq_len, a.features)
 if world > 1:
     sampler = torch.utils.data.DistributedSampler(
-        dataset, num_replicas=world, rank=rank, shuffle=True
+        dataset,
+        num_replicas=world,
+        rank=rank,
+        shuffle=True,
+        drop_last=True,
     )
 else:
     sampler = None
@@ -56,6 +60,7 @@ loader = torch.utils.data.DataLoader(
     sampler=sampler,
     shuffle=sampler is None,
     pin_memory=device.type == "cuda",
+    drop_last=True,
 )
 model = MicrostructureForecaster(
     a.features,
@@ -118,15 +123,26 @@ if world > 1:
     torch.distributed.barrier()
 
 elapsed = time.perf_counter() - start
+sample_count = torch.tensor(
+    [samples],
+    dtype=torch.long,
+    device=device,
+)
+if world > 1:
+    torch.distributed.all_reduce(
+        sample_count,
+        op=torch.distributed.ReduceOp.SUM,
+    )
+global_samples = int(sample_count.item())
 result = {
     "rank": rank,
     "world_size": world,
     "device": str(device),
     "global_batch_size": a.batch_size * world,
     "steps": a.steps,
-    "global_samples": samples * world,
+    "global_samples": global_samples,
     "wall_seconds": elapsed,
-    "samples_per_s": samples * world / elapsed,
+    "samples_per_s": global_samples / elapsed,
     "step_ms": elapsed / a.steps * 1000,
     "parameters": sum(p.numel() for p in core.parameters()),
 }

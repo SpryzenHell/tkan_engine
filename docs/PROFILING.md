@@ -17,9 +17,10 @@ Run the same model/data configuration at ranks 1, 2, 4 and 8.
 Record:
 - global samples per second,
 - step time,
-- all-reduce contribution,
+- end-to-end step time,
 - peak memory per rank,
-- scaling efficiency.
+- scaling efficiency;
+- optional communication microbenchmarks when explicitly added.
 
 The CPU two-rank script is a correctness smoke test only.
 
@@ -44,8 +45,9 @@ scripts/ddp_benchmark.py records:
 - samples/sec
 - step latency
 - parameter count
+- global sample count
 
-For GPU scaling, run the same configuration at 1, 2, 4 and 8 ranks. Compute:
+For GPU scaling, run the same configuration at 1, 2, 4 and 8 ranks using a fixed dataset and batch size. Compute:
 
 scaling_efficiency(N) = throughput_N / (N * throughput_1)
 
