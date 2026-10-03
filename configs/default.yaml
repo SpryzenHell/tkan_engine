@@ -1,0 +1,20 @@
+seed: 7
+lob:
+  levels: 10
+  events: 300000000
+  arrow_batch_size: 1000000
+model:
+  hidden_dim: 128
+  depth: 3
+  grid_size: 12
+  spline_order: 3
+training:
+  epochs: 20
+  batch_size: 1024
+  lr: 0.001
+  grid_update_interval: 100
+  ddp: true
+  amp: true
+performance:
+  profile_steps: 100
+  benchmark_ranks: [1, 2, 4, 8]

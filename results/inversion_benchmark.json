@@ -1,0 +1,31 @@
+{
+  "events": 3000,
+  "sequence_length": 16,
+  "train_sequences": 2387,
+  "test_sequences": 597,
+  "features": 3,
+  "target_units": "synthetic impact basis points",
+  "generator": "0.9*sin(2.6*OFI) + 0.55*OFI^3 + 0.25*dOFI + N(0,0.08^2)",
+  "mlp_parameters": 801,
+  "tkan_parameters": 3266,
+  "mlp_seconds": 0.8087794950000671,
+  "tkan_seconds": 2.446628465999993,
+  "mlp": {
+    "test_mse_bps2": 0.7599496245384216,
+    "test_rmse_bps": 0.8717508959206303,
+    "test_ic": 0.7501842645251934
+  },
+  "tkan": {
+    "test_mse_bps2": 0.4400458037853241,
+    "test_rmse_bps": 0.6633594830748439,
+    "test_ic": 0.7918694592036091
+  },
+  "tkan_training_history": [
+    {"epoch": 1, "loss": 0.48582674484503896},
+    {"epoch": 2, "loss": 0.4176075976145895},
+    {"epoch": 3, "loss": 0.9488262000836825},
+    {"epoch": 4, "loss": 0.5319288153397409},
+    {"epoch": 5, "loss": 0.2757521710897747}
+  ],
+  "notes": "Controlled synthetic inversion benchmark; not exchange data and not a trading-alpha claim."
+}
