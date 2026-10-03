@@ -35,12 +35,12 @@ For an environment without internet, the optional Arrow/GPU dependencies can be 
 python scripts/inversion_benchmark.py
 ~~~
 
-The current local run uses 3,000 controlled synthetic observations with an 80/20 chronological split.
+The repository's verified CI smoke run uses 1,000 controlled synthetic observations, a chronological 80/20 split, and 2 training epochs.
 
 | Model | Test MSE (bps squared) | Test RMSE (bps) | Test IC |
 |---|---:|---:|---:|
-| MLP | 0.75995 | 0.87175 | 0.75018 |
-| T-KAN | 0.44005 | 0.66336 | 0.79187 |
+| MLP | 1.08200 | 1.04019 | -0.12741 |
+| T-KAN | 0.99613 | 0.99806 | 0.27865 |
 
 The target generator is a known nonlinear response:
 0.9 sin(2.6 OFI) + 0.55 OFI cubed + 0.25 dOFI + Gaussian noise with sigma 0.08.
@@ -48,6 +48,8 @@ The target generator is a known nonlinear response:
 These numbers demonstrate representation learning on a controlled benchmark. They are not market-alpha claims.
 
 Full output: results/inversion_benchmark.json
+
+A larger 3,000-event / 5-epoch control run is also documented in docs/EXPERIMENTS.md; it was executed in the local development environment and is labeled separately from CI evidence.
 
 ## Run an LOB training smoke test
 
