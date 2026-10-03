@@ -19,4 +19,4 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e . pytest
       - run: pytest
-      - run: python scripts/inversion_benchmark.py --events 1000 --epochs 2
+      - run: python scripts/inversion_benchmark.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6
