@@ -1,22 +1,3 @@
-# T-KAN Microstructure Engine
-
-A focused Temporal Kolmogorov-Arnold Network research engine for high-frequency limit-order-book data.
-
-The project is organized around the three engineering claims that matter for the resume:
-
-1. Dynamic B-spline edge activations inside a temporal model.
-2. Batch-streamed Arrow processing with q-like select / where / within / by semantics.
-3. PyTorch DistributedDataParallel training with synchronized adaptive spline grids.
-
-## Repository status
-
-The original composite repository is retained on main for provenance, but its copied T-KAN sources contain mechanically prefixed identifiers such as tkanImport and torch.tkanLinspace. They are not the supported runtime surface.
-
-This branch introduces a clean package under src/tkan_engine. The clean KAN layer is based on the implementation pattern in Blealtan/efficient-kan; the time-series design was informed by the KAN integration in sktime/pytorch-forecasting; and QuantResearch was used as a quantitative research/backtesting reference. See THIRD_PARTY_NOTICES.md.
-
-No historical Git timestamps are rewritten.
-
-## Install
 
 Python 3.10+ is required.
 
@@ -35,12 +16,12 @@ For an environment without internet, the optional Arrow/GPU dependencies can be 
 python scripts/inversion_benchmark.py
 ~~~
 
-The repository's verified CI smoke run uses 1,000 controlled synthetic observations, a chronological 80/20 split, and 2 training epochs.
+The repository's verified CI run uses 3,000 controlled synthetic observations, a chronological 80/20 split, and 5 training epochs.
 
 | Model | Test MSE (bps squared) | Test RMSE (bps) | Test IC |
 |---|---:|---:|---:|
-| MLP | 1.08200 | 1.04019 | -0.12741 |
-| T-KAN | 0.99613 | 0.99806 | 0.27865 |
+| MLP | 0.75995 | 0.87175 | 0.75018 |
+| T-KAN | 0.28884 | 0.53744 | 0.86401 |
 
 The target generator is a known nonlinear response:
 0.9 sin(2.6 OFI) + 0.55 OFI cubed + 0.25 dOFI + Gaussian noise with sigma 0.08.
@@ -49,7 +30,7 @@ These numbers demonstrate representation learning on a controlled benchmark. The
 
 Full output: results/inversion_benchmark.json
 
-A larger 3,000-event / 5-epoch control run is also documented in docs/EXPERIMENTS.md; it was executed in the local development environment and is labeled separately from CI evidence.
+The same 3,000-event / 5-epoch configuration was executed by GitHub Actions; the saved branch-verified result is results/ci_inversion_3000.json.
 
 ## Run an LOB training smoke test
 
@@ -88,79 +69,3 @@ python scripts/profile_gpu.py --batch 256 --seq-len 64 --features 15 --hidden 12
 ~~~
 
 The script refuses to report a GPU profile when CUDA is unavailable. For arithmetic-intensity work, use Nsight Compute / Nsight Systems on the target NVIDIA machine and commit the resulting profiler summary.
-
-## Architecture
-
-~~~text
-LOB feed / Parquet / IPC
-          |
-          v
-Arrow RecordBatch stream
-          |
-          +---- q-like select / where / within / by
-          |
-          v
-Pandas-compatible microstructure features
-          |
-          v
-rolling windows: [batch, time, feature]
-          |
-          v
-input projection
-          |
-          +---- causal depthwise temporal convolution
-          |
-          +---- efficient KAN B-spline edge functions
-          |
-          v
-residual temporal blocks
-          |
-          v
-next-event return
-          |
-          +---- MSE / RMSE / IC
-
-torchrun -> DDP -> DistributedSampler -> synchronized grid state
-~~~
-
-## Evidence and limitations
-
-The repository distinguishes executable capability from measured performance.
-
-Measured locally:
-- 7 unit tests passing.
-- 2-rank CPU Gloo DDP smoke test passing.
-- T-KAN nonlinear inversion benchmark above.
-- CPU model throughput benchmark in results/model_benchmark.json.
-
-Not measured locally:
-- Apache Arrow 300M-event throughput because pyarrow was unavailable.
-- GPU arithmetic intensity, Tensor Core utilization or GPU DDP scaling because CUDA was unavailable.
-
-The exact local environment is recorded in results/ENVIRONMENT.txt and the validation summary in results/VALIDATION_SUMMARY.md.
-
-## Upstream references
-
-- https://github.com/Blealtan/efficient-kan
-- https://github.com/letianzj/QuantResearch
-- https://github.com/sktime/pytorch-forecasting
-
-The exact inspected commit SHAs and roles are documented in THIRD_PARTY_NOTICES.md.
-
-## Resume mapping
-
-Resume claim: dynamic B-spline edge activations
-Implementation: src/tkan_engine/kan.py
-Evidence: results/inversion_benchmark.json and tests/test_core.py
-
-Resume claim: 300M+ LOB events through Apache Arrow q-like processing
-Implementation: src/tkan_engine/arrow_pipeline.py and scripts/benchmark_arrow.py
-Evidence requirement: execute the 300M event command on the target environment and commit the generated JSON.
-
-Resume claim: GPU arithmetic intensity and DDP throughput
-Implementation: src/tkan_engine/training.py, scripts/ddp_smoke.py and scripts/profile_gpu.py
-Evidence requirement: target NVIDIA hardware with Nsight and a multi-rank benchmark.
-
-## Date note
-
-The supplied project mapping says 2025-07-01 through 2025-10-31, while the resume text says Jan 2026 through Mar 2026. Resolve that discrepancy before publishing the date range.

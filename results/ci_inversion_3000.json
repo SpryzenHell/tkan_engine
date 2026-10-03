@@ -1,0 +1,13 @@
+{
+  "ci_run_id": 37152691375,
+  "branch_commit": "020ae688b5a31d491f269c252c6c0fa9cb93102f",
+  "events": 3000,
+  "sequence_length": 16,
+  "train_sequences": 2387,
+  "test_sequences": 597,
+  "features": 3,
+  "generator": "0.9*sin(2.6*OFI) + 0.55*OFI^3 + 0.25*dOFI + N(0,0.08^2)",
+  "mlp": {"parameters": 801, "test_mse_bps2": 0.7599496245384216, "test_rmse_bps": 0.8717508959206303, "test_ic": 0.7501842616127321},
+  "tkan": {"parameters": 3266, "test_mse_bps2": 0.28884389996528625, "test_rmse_bps": 0.5374419968380646, "test_ic": 0.8640117297311316},
+  "notes": "Controlled synthetic inversion benchmark; not exchange data and not a trading-alpha claim."
+}

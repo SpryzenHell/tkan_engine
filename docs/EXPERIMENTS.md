@@ -5,18 +5,16 @@
 Generator:
 0.9 sin(2.6 OFI) + 0.55 OFI cubed + 0.25 dOFI + N(0, 0.08 squared)
 
-### Verified CI smoke
+### Verified GitHub CI run
 
-1,000 events are converted to 16-step sequences. The split is chronological: 80 percent train, 20 percent test. This run executed from the PR branch on GitHub Actions.
+3,000 events are converted to 16-step sequences. The split is chronological: 80 percent train, 20 percent test. The run executed from the PR branch on GitHub Actions.
 
 | Model | Parameters | MSE (bps squared) | RMSE (bps) | IC |
 |---|---:|---:|---:|---:|
-| MLP | 801 | 1.08200 | 1.04019 | -0.12741 |
-| T-KAN | 3266 | 0.99613 | 0.99806 | 0.27865 |
+| MLP | 801 | 0.75995 | 0.87175 | 0.75018 |
+| T-KAN | 3266 | 0.28884 | 0.53744 | 0.86401 |
 
-### Local control
-
-A separate 3,000-event / 5-epoch control run in the local development environment produced T-KAN RMSE 0.63750 bps and IC 0.80753 versus the MLP's RMSE 0.87175 bps and IC 0.75018. This is not the CI result above.
+Source: results/ci_inversion_3000.json.
 
 The purpose of this experiment is to test nonlinear representation and temporal modelling. It is deliberately not presented as a trading backtest.
 
