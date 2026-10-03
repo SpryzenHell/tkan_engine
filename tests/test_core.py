@@ -85,3 +85,21 @@ def test_arrow_q_helpers_when_available():
     assert within.num_rows == 2
     grouped = ap.q_by(table, ["g"], [("x", "mean")])
     assert grouped.num_rows == 2
+
+def test_arrow_raw_lob_derivation_when_available():
+    import pytest
+    pa = pytest.importorskip("pyarrow")
+    from tkan_engine import arrow_pipeline as ap
+    batch = pa.record_batch(
+        {
+            "ts_ns": pa.array([1, 2]),
+            "bid_px_1": pa.array([100.0, 100.01]),
+            "ask_px_1": pa.array([100.02, 100.03]),
+            "bid_sz_1": pa.array([3.0, 1.0]),
+            "ask_sz_1": pa.array([1.0, 3.0]),
+        }
+    )
+    result = ap.process_batches([batch])
+    assert result.events == 2
+    assert result.selected_rows == 2
+    assert result.checksum > 0

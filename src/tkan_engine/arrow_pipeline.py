@@ -76,19 +76,43 @@ def process_batches(batches: Iterable):
 
     for batch in batches:
         table = pa.Table.from_batches([batch])
+
+        # Accept raw L2 events or already-featured batches. Raw L2 events must
+        # contain best bid/ask prices and sizes; derived columns are computed in
+        # Arrow so the 300M-event path exercises columnar feature construction.
+        if "mid" not in table.column_names:
+            mid = pc.multiply(
+                pc.add(table["ask_px_1"], table["bid_px_1"]),
+                0.5,
+            )
+            table = table.append_column("mid", mid)
+
+        if "queue_imbalance" not in table.column_names:
+            denom = pc.add(table["bid_sz_1"], table["ask_sz_1"])
+            denom = pc.max_element_wise(
+                denom,
+                pa.scalar(1e-12, type=denom.type),
+            )
+            qi = pc.divide(
+                pc.subtract(table["bid_sz_1"], table["ask_sz_1"]),
+                denom,
+            )
+            table = table.append_column("queue_imbalance", qi)
+
         spread = pc.divide(
             pc.multiply(
                 pc.subtract(table["ask_px_1"], table["bid_px_1"]),
-                1e4,
+                pa.scalar(1e4),
             ),
             table["mid"],
         )
         table = table.append_column("spread_bps", spread)
+
         table = q_where(
             table,
             pc.and_(
-                pc.greater(table["queue_imbalance"], -0.9),
-                pc.less(table["queue_imbalance"], 0.9),
+                pc.greater_equal(table["queue_imbalance"], -0.9),
+                pc.less_equal(table["queue_imbalance"], 0.9),
             ),
         )
         table = q_select(
