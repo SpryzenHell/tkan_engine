@@ -20,3 +20,14 @@ jobs:
       - run: python -m pip install -e . pytest
       - run: pytest
       - run: python scripts/inversion_benchmark.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6
+
+  arrow-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e . pyarrow
+      - run: python scripts/benchmark_arrow.py --events 5000000 --batch-size 250000
