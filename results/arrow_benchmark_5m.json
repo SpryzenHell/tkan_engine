@@ -1,11 +1,17 @@
 {
-  "run_id": 37152777795,
+  "ci_run_id": 37154074480,
+  "job": "arrow-smoke",
   "events": 5000000,
   "batches": 20,
   "batch_size": 250000,
-  "elapsed_s": 0.48123740400001225,
-  "events_per_s": 10389882.329262737,
+  "elapsed_s": 0.4756244419999689,
+  "events_per_s": 10512495.907433469,
   "selected_rows": 5000000,
   "checksum": 25165450.69060454,
-  "environment": "GitHub Actions ubuntu-24.04, Python 3.12"
+  "environment": {
+    "runner": "GitHub Actions ubuntu-24.04",
+    "python": "3.12.14",
+    "pyarrow": "25.0.1",
+    "torch": "2.14.1"
+  }
 }
