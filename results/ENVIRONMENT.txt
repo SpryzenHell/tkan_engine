@@ -1,8 +1,0 @@
-# Local validation environment
-Python: 3.13
-PyTorch: 2.10.0+cpu
-pandas: 2.2.3
-numpy: 2.3.5
-lightning: 2.6.5
-CUDA: unavailable
-Apache Arrow / pyarrow: unavailable
