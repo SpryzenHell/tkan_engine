@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="380" viewBox="0 0 1100 380">
+<rect width="1100" height="380" fill="#fafbfc"/>
+<text x="55" y="48" font-family="Arial, sans-serif" font-size="24" fill="#28343d">End-to-end data and model path</text>
+<text x="55" y="75" font-family="Arial, sans-serif" font-size="14" fill="#5b6872">Components correspond to the implementation under src/tkan_engine/</text>
+<g font-family="Arial, sans-serif">
+<rect x="55" y="135" width="175" height="100" rx="8" fill="#eef2f4" stroke="#8b969e" stroke-width="2"/>
+<text x="142" y="174" text-anchor="middle" font-size="16" fill="#28343d">LOB event source</text>
+<text x="142" y="200" text-anchor="middle" font-size="13" fill="#5b6872">Synthetic stream</text>
+<text x="142" y="222" text-anchor="middle" font-size="13" fill="#5b6872">or Parquet</text>
+<rect x="290" y="135" width="175" height="100" rx="8" fill="#f3f5f6" stroke="#8b969e" stroke-width="2"/>
+<text x="377" y="174" text-anchor="middle" font-size="16" fill="#28343d">Feature layer</text>
+<text x="377" y="200" text-anchor="middle" font-size="13" fill="#5b6872">spread / imbalance</text>
+<text x="377" y="222" text-anchor="middle" font-size="13" fill="#5b6872">microprice / depth</text>
+<rect x="525" y="135" width="175" height="100" rx="8" fill="#eef2f4" stroke="#8b969e" stroke-width="2"/>
+<text x="612" y="174" text-anchor="middle" font-size="16" fill="#28343d">Rolling windows</text>
+<text x="612" y="200" text-anchor="middle" font-size="13" fill="#5b6872">[batch, time, feature]</text>
+<text x="612" y="222" text-anchor="middle" font-size="13" fill="#5b6872">next-event target</text>
+<rect x="760" y="115" width="285" height="140" rx="8" fill="#f3f5f6" stroke="#667783" stroke-width="2"/>
+<text x="902" y="152" text-anchor="middle" font-size="16" fill="#28343d">Temporal KAN</text>
+<text x="902" y="180" text-anchor="middle" font-size="13" fill="#5b6872">input projection</text>
+<text x="902" y="201" text-anchor="middle" font-size="13" fill="#5b6872">causal depthwise temporal mixing</text>
+<text x="902" y="222" text-anchor="middle" font-size="13" fill="#5b6872">B-spline KAN edges</text>
+<text x="902" y="243" text-anchor="middle" font-size="13" fill="#5b6872">linear head</text>
+<g stroke="#75838c" stroke-width="3" fill="none">
+<line x1="230" y1="185" x2="290" y2="185"/><line x1="465" y1="185" x2="525" y2="185"/><line x1="700" y1="185" x2="760" y2="185"/>
+</g>
+<g fill="#75838c"><polygon points="290,185 278,179 278,191"/><polygon points="525,185 513,179 513,191"/><polygon points="760,185 748,179 748,191"/></g>
+</g>
+<text x="55" y="315" font-family="Arial" font-size="13" fill="#5b6872">Arrow stress path: event source → RecordBatch → q-like columnar processing → checksum.</text>
+<text x="55" y="338" font-family="Arial" font-size="13" fill="#5b6872">Training path: feature frame → sequence tensor → Temporal KAN → next midpoint-return prediction.</text>
+</svg>

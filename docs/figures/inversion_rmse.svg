@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+<rect width="900" height="520" fill="#fafbfc"/>
+<text x="70" y="55" font-family="Arial, sans-serif" font-size="24" fill="#28343d">Controlled nonlinear inversion benchmark</text>
+<text x="70" y="83" font-family="Arial, sans-serif" font-size="14" fill="#5b6872">Test RMSE on the measured 3,000-event CI run</text>
+<line x1="90" y1="440" x2="840" y2="440" stroke="#6d7780" stroke-width="2"/>
+<line x1="90" y1="120" x2="90" y2="440" stroke="#6d7780" stroke-width="2"/>
+<g stroke="#d9dfe3"><line x1="90" y1="360" x2="840" y2="360"/><line x1="90" y1="280" x2="840" y2="280"/><line x1="90" y1="200" x2="840" y2="200"/></g>
+<rect x="245" y="161.039713312" width="180" height="278.960286688" fill="#9fbcc6"/>
+<rect x="535" y="268.019137728" width="180" height="171.98086227200002" fill="#6f939e"/>
+<text x="335" y="462" text-anchor="middle" font-family="Arial" font-size="17" fill="#28343d">MLP</text>
+<text x="625" y="462" text-anchor="middle" font-family="Arial" font-size="17" fill="#28343d">T-KAN</text>
+<text x="335" y="147.039713312" text-anchor="middle" font-family="Arial" font-size="16" fill="#28343d">0.87175 bps</text>
+<text x="625" y="254.01913772799998" text-anchor="middle" font-family="Arial" font-size="16" fill="#28343d">0.53744 bps</text>
+<text x="18" y="128" font-family="Arial" font-size="13" fill="#5b6872">1.0</text>
+<text x="18" y="208" font-family="Arial" font-size="13" fill="#5b6872">0.75</text>
+<text x="18" y="288" font-family="Arial" font-size="13" fill="#5b6872">0.50</text>
+<text x="18" y="368" font-family="Arial" font-size="13" fill="#5b6872">0.25</text>
+<text x="18" y="448" font-family="Arial" font-size="13" fill="#5b6872">0</text>
+</svg>

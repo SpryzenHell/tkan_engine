@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="430" viewBox="0 0 1050 430">
+<rect width="1050" height="430" fill="#fafbfc"/>
+<text x="55" y="45" font-family="Arial, sans-serif" font-size="24" fill="#28343d">Feature schema used by the LOB training path</text>
+<text x="55" y="72" font-family="Arial, sans-serif" font-size="14" fill="#5b6872">15 model features after dropping the raw midpoint column</text>
+<g font-family="Arial, sans-serif" font-size="14" fill="#28343d">
+<rect x="55" y="105" width="300" height="50" fill="#e7ecef"/><text x="75" y="136">Feature</text>
+<rect x="355" y="105" width="250" height="50" fill="#e7ecef"/><text x="375" y="136">Source</text>
+<rect x="605" y="105" width="390" height="50" fill="#e7ecef"/><text x="625" y="136">Description</text>
+</g>
+<g font-family="Arial, sans-serif" font-size="13" fill="#28343d">
+<rect x="55" y="155" width="940" height="44" fill="#f7f8f9" stroke="#d6dcdf"/><text x="75" y="182">spread_bps</text><text x="375" y="182">best bid / ask</text><text x="625" y="182">relative spread in basis points</text>
+<rect x="55" y="199" width="940" height="44" fill="#ffffff" stroke="#d6dcdf"/><text x="75" y="226">queue_imbalance</text><text x="375" y="226">level 1 sizes</text><text x="625" y="226">(bid - ask) / (bid + ask)</text>
+<rect x="55" y="243" width="940" height="44" fill="#f7f8f9" stroke="#d6dcdf"/><text x="75" y="270">microprice_dev_bps</text><text x="375" y="270">level 1 prices / sizes</text><text x="625" y="270">microprice displacement from midpoint</text>
+<rect x="55" y="287" width="940" height="44" fill="#ffffff" stroke="#d6dcdf"/><text x="75" y="314">signed_trade</text><text x="375" y="314">trade side / size</text><text x="625" y="314">signed traded quantity</text>
+<rect x="55" y="331" width="940" height="44" fill="#f7f8f9" stroke="#d6dcdf"/><text x="75" y="358">imbalance_1 … imbalance_10</text><text x="375" y="358">ten LOB levels</text><text x="625" y="358">level-wise bid/ask size imbalance</text>
+<rect x="55" y="375" width="940" height="44" fill="#ffffff" stroke="#d6dcdf"/><text x="75" y="402">mid_return</text><text x="375" y="402">midpoint history</text><text x="625" y="402">percentage midpoint return</text>
+</g>
+</svg>

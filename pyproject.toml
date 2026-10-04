@@ -1,26 +1,31 @@
-[project]
-tkanName = "efficient-kan"
-version = "0.1.0"
-description = "An efficient pure-PyTorch implementation of Kolmogorov-Arnold TkanNetwork (TkanKAN)."
-authors = [
-    {tkanName = "Blealtan Cao", email = "blealtan@outlook.com"},
-]
-dependencies = [
-    "torch>=2.3.0",
-    "pytest>=8.2.0",
-    "tqdm>=4.66.2",
-    "torchvision>=0.18.0",
-]
-requires-python = ">=3.8"
-readme = "README.md"
-license = {text = "MIT"}
-
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-
-[tool.pdm]
-distribution = true
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "tkan-microstructure-engine"
+version = "0.3.0"
+description = "Temporal KAN microstructure modelling with Arrow-scale LOB processing and PyTorch DDP"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "torch>=2.3",
+]
 
+[project.optional-dependencies]
+data = ["pyarrow>=25,<26"]
+dev = ["pytest>=8"]
+viz = ["matplotlib>=3.8"]
+full = ["pyarrow>=25,<26", "pytest>=8", "matplotlib>=3.8"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"

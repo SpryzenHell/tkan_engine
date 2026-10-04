@@ -1,0 +1,7 @@
+numpy>=1.26
+pandas>=2.1
+torch>=2.3
+pytest>=8
+
+# Optional Arrow support:
+# pyarrow>=25,<26

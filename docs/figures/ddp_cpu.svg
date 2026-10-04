@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+<rect width="900" height="520" fill="#fafbfc"/>
+<text x="65" y="55" font-family="Arial, sans-serif" font-size="24" fill="#28343d">Two-rank CPU DDP smoke benchmark</text>
+<text x="65" y="83" font-family="Arial, sans-serif" font-size="14" fill="#5b6872">Correctness / small throughput check; not a GPU scaling result</text>
+<rect x="90" y="140" width="680" height="110" rx="8" fill="#eef2f4" stroke="#c5cdd2"/>
+<text x="120" y="175" font-family="Arial" font-size="15" fill="#5b6872">World size</text><text x="120" y="215" font-family="Arial" font-size="30" fill="#28343d">2</text>
+<text x="300" y="175" font-family="Arial" font-size="15" fill="#5b6872">Global batch</text><text x="300" y="215" font-family="Arial" font-size="30" fill="#28343d">256</text>
+<text x="485" y="175" font-family="Arial" font-size="15" fill="#5b6872">Global samples</text><text x="485" y="215" font-family="Arial" font-size="30" fill="#28343d">2,560</text>
+<line x1="110" y1="375" x2="750" y2="375" stroke="#6d7780" stroke-width="2"/>
+<rect x="110" y="337" width="560" height="76" rx="8" fill="#8caab4"/>
+<text x="685" y="372" font-family="Arial" font-size="16" fill="#28343d">104.900 samples/s</text>
+<text x="110" y="455" font-family="Arial" font-size="16" fill="#5b6872">Wall time: 24.404 s • step time: 2,440.431 ms • parameters: 889,604</text>
+</svg>

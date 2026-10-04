@@ -1,0 +1,18 @@
+{
+  "ci_run_id": 37154074480,
+  "job": "ddp-cpu-smoke",
+  "world_size": 2,
+  "device": "cpu",
+  "global_batch_size": 256,
+  "steps": 10,
+  "global_samples": 2560,
+  "wall_seconds": 24.404306757,
+  "samples_per_s": 104.89951734710527,
+  "step_ms": 2440.4306757,
+  "parameters": 889604,
+  "environment": {
+    "runner": "GitHub Actions ubuntu-24.04",
+    "python": "3.12.14",
+    "torch": "2.14.1"
+  }
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300">
+<rect width="900" height="300" fill="#fafbfc"/>
+<text x="60" y="45" font-family="Arial, sans-serif" font-size="22" fill="#28343d">Measured model comparison</text>
+<g transform="translate(60,75)" font-family="Arial, sans-serif">
+<rect width="780" height="52" fill="#e7ecef"/>
+<text x="30" y="33" font-size="15" fill="#28343d">Model</text><text x="170" y="33" font-size="15" fill="#28343d">Parameters</text><text x="320" y="33" font-size="15" fill="#28343d">MSE (bps²)</text><text x="470" y="33" font-size="15" fill="#28343d">RMSE (bps)</text><text x="610" y="33" font-size="15" fill="#28343d">IC</text>
+<rect y="52" width="780" height="66" fill="#f7f8f9" stroke="#d6dcdf"/>
+<text x="30" y="91" font-size="15" fill="#28343d">MLP</text><text x="170" y="91" font-size="15" fill="#28343d">801</text><text x="320" y="91" font-size="15" fill="#28343d">0.75995</text><text x="470" y="91" font-size="15" fill="#28343d">0.87175</text><text x="610" y="91" font-size="15" fill="#28343d">0.75018</text>
+<rect y="118" width="780" height="66" fill="#ffffff" stroke="#d6dcdf"/>
+<text x="30" y="157" font-size="15" fill="#28343d">T-KAN</text><text x="170" y="157" font-size="15" fill="#28343d">3,266</text><text x="320" y="157" font-size="15" fill="#28343d">0.28884</text><text x="470" y="157" font-size="15" fill="#28343d">0.53744</text><text x="610" y="157" font-size="15" fill="#28343d">0.86401</text>
+</g></svg>

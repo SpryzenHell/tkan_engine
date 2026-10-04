@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+<rect width="900" height="520" fill="#fafbfc"/>
+<text x="65" y="55" font-family="Arial, sans-serif" font-size="24" fill="#28343d">Apache Arrow 300M-event stress run</text>
+<text x="65" y="83" font-family="Arial, sans-serif" font-size="14" fill="#5b6872">GitHub Actions Ubuntu 24.04 / Python 3.12.14 / PyArrow 25.0.1</text>
+<rect x="75" y="125" width="750" height="84" rx="8" fill="#eef2f4" stroke="#c5cdd2"/>
+<text x="105" y="157" font-family="Arial" font-size="15" fill="#5b6872">Events</text><text x="105" y="190" font-family="Arial" font-size="30" fill="#28343d">300,000,000</text>
+<text x="365" y="157" font-family="Arial" font-size="15" fill="#5b6872">RecordBatches</text><text x="365" y="190" font-family="Arial" font-size="30" fill="#28343d">300</text>
+<text x="585" y="157" font-family="Arial" font-size="15" fill="#5b6872">Batch size</text><text x="585" y="190" font-family="Arial" font-size="30" fill="#28343d">1,000,000</text>
+<rect x="75" y="245" width="750" height="160" rx="8" fill="#f7f8f9" stroke="#d2d8dc"/>
+<text x="105" y="278" font-family="Arial" font-size="15" fill="#5b6872">Elapsed</text><text x="105" y="315" font-family="Arial" font-size="28" fill="#28343d">19.174 s</text>
+<text x="350" y="278" font-family="Arial" font-size="15" fill="#5b6872">Throughput</text><text x="350" y="315" font-family="Arial" font-size="28" fill="#28343d">15.646 M events/s</text>
+<text x="105" y="362" font-family="Arial" font-size="15" fill="#5b6872">Selected rows</text><text x="105" y="390" font-family="Arial" font-size="21" fill="#28343d">300,000,000</text>
+<text x="520" y="362" font-family="Arial" font-size="15" fill="#5b6872">Checksum</text><text x="520" y="390" font-family="Arial" font-size="21" fill="#28343d">1,509,462,417.5703695</text>
+</svg>
