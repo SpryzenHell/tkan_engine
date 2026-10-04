@@ -17,7 +17,8 @@ dependencies = [
 [project.optional-dependencies]
 data = ["pyarrow>=25,<26"]
 dev = ["pytest>=8"]
-full = ["pyarrow>=25,<26", "pytest>=8"]
+viz = ["matplotlib>=3.8"]
+full = ["pyarrow>=25,<26", "pytest>=8", "matplotlib>=3.8"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

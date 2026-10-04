@@ -46,6 +46,8 @@ Configuration:
 
 ![Training loss](docs/figures/inversion_loss.svg)
 
+![Measured comparison table](docs/figures/inversion_table.svg)
+
 The exact CI JSON is stored in `results/ci_inversion_3000.json`.
 
 ### 300M-event Arrow stress run
@@ -89,6 +91,10 @@ The exact run is stored in `results/ddp_benchmark_cpu.json`.
 The following image is a rendering of the actual benchmark output captured from the same CI run.
 
 ![CI terminal snapshot](docs/figures/ci_terminal_snapshot.svg)
+
+![End-to-end pipeline](docs/figures/pipeline.svg)
+
+![LOB feature schema](docs/figures/feature_schema.svg)
 
 ## Installation
 
@@ -305,6 +311,7 @@ scripts/
     generate_demo.py
     inversion_benchmark.py
     profile_gpu.py
+    render_report.py
     self_check.py
     train.py
 
@@ -328,6 +335,17 @@ results/
     arrow_benchmark_300m.json
     ddp_benchmark_cpu.json
 ```
+
+## Regenerate the figures
+
+The committed figures are derived from the JSON result files. To regenerate them, install the optional visualization dependencies and run:
+
+```bash
+python -m pip install -e ".[viz]"
+python scripts/render_report.py
+```
+
+The script writes fresh PNG copies under `results/figures/`. The benchmark numbers themselves come from the JSON files, not from the figure files.
 
 ## Reproducibility notes
 
