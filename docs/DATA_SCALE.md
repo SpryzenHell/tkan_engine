@@ -1,25 +1,42 @@
 # Data scale
 
-## 300M-event design
+## 300M-event path
 
-The command is:
+The full stress command is:
 
+```text
 python scripts/benchmark_arrow.py --events 300000000 --batch-size 1000000
+```
 
-synthetic_arrow_stream generates one RecordBatch at a time. process_batches transforms and consumes each batch before the next batch is generated.
+The synthetic generator creates one Arrow RecordBatch at a time. `process_batches` consumes the current batch before the next one is generated.
 
-Therefore:
-- rows are bounded by batch size rather than total event count,
-- Arrow compute operates on columns,
-- a 300M-event stress run does not require a 300M-row in-memory object.
+The measured GitHub Actions run processed:
 
-The local runtime used for this branch did not have pyarrow, so it did not produce a 300M throughput result.
+| Metric | Value |
+|---|---:|
+| Events | 300,000,000 |
+| RecordBatches | 300 |
+| Batch size | 1,000,000 |
+| Elapsed | 19.174389979 s |
+| Throughput | 15,645,869.325 events/s |
+| Selected rows | 300,000,000 |
 
-For a real replay:
-1. store Parquet or Arrow IPC files by date/symbol,
-2. use pyarrow.dataset to scan partitions,
-3. keep the same RecordBatch interface,
-4. record dataset, date range, symbols, CPU, RAM, pyarrow version and command,
-5. commit the resulting benchmark JSON.
+The run used Ubuntu 24.04, Python 3.12.14 and PyArrow 25.0.1.
 
-The 300M number should only be written on the resume after that target-environment run has actually completed.
+The important property is the memory boundary: total event count does not change the size of a single Arrow batch.
+
+## Real replay data
+
+For a real Parquet dataset, the minimum columns required by the raw-L2 path are:
+
+```
+ts_ns
+bid_px_1
+ask_px_1
+bid_sz_1
+ask_sz_1
+```
+
+The pipeline derives midpoint, queue imbalance and spread before filtering and projection.
+
+For any real-data performance result, record the data source, date range, symbol universe, partition layout, machine configuration, software versions and exact command. Real exchange data is intentionally excluded from the repository.

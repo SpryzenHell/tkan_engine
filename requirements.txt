@@ -2,5 +2,6 @@ numpy>=1.26
 pandas>=2.1
 torch>=2.3
 pytest>=8
-# Optional: pyarrow>=25,<26
-# Optional: lightning>=2.3
+
+# Optional Arrow support:
+# pyarrow>=25,<26

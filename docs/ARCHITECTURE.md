@@ -1,36 +1,61 @@
 # Architecture
 
+## Event and feature path
+
+The synthetic L2 generator emits ten price levels per event, best bid/ask prices and sizes, trade side and trade size. The pandas feature extractor turns these observations into a compact event representation.
+
+The main derived quantities are:
+
+- spread in basis points
+- level-1 queue imbalance
+- microprice displacement in basis points
+- signed trade size
+- level-wise depth imbalance for levels 1–10
+- midpoint return
+
+Rolling windows are converted to tensors with shape `[batch, time, feature]`.
+
 ## Temporal KAN
 
-The KAN edge function is the efficient B-spline formulation from efficient-kan: basis values are evaluated per input feature, flattened and projected with a single F.linear operation rather than materializing a batch x output x input activation tensor.
+The model first projects raw features into a hidden representation. Each TemporalKAN block applies:
 
-TemporalKANBlock adds a causal depthwise temporal convolution before the KAN projection and a residual gated output.
+```
+LayerNorm
+   |
+causal depthwise temporal convolution
+   |
+B-spline KAN edge projection
+   |
+SiLU + linear mixing
+   |
+residual gated update
+```
 
-The grid updater uses empirical sample locations blended with a uniform component. After moving knots, spline coefficients are re-fitted by least squares so the learned edge function is approximately preserved.
+The B-spline edge implementation follows the efficient flatten-and-project pattern: basis values are evaluated for each input feature and the flattened basis matrix is passed through a single `F.linear`.
 
-## Microstructure representation
+Adaptive grid updates use observed sample locations blended with a uniform component. After the knot locations are moved, spline coefficients are refit so that the learned edge function is approximately preserved under the new grid.
 
-The feature extractor derives:
-- bid/ask spread in basis points,
-- level-1 queue imbalance,
-- microprice displacement,
-- signed trade size,
-- level-wise depth imbalance,
-- midpoint return.
+## Arrow path
 
-The sequence model consumes rolling [batch, time, feature] windows and predicts the next midpoint return.
+The Arrow benchmark is intentionally batch bounded:
 
-## Data path
+```
+Parquet / synthetic generator
+        |
+    RecordBatch
+        |
+raw L2 derivation
+        |
+q-like where / select / within
+        |
+checksum / metrics
+```
 
-The production shape is:
-feed or dataset reader -> Arrow RecordBatch -> q-like filter/project/group operations -> feature extraction -> rolling windows -> Torch tensor.
+The 300M-event run is therefore a streaming stress test. It exercises 300 bounded RecordBatches rather than constructing one 300M-row object.
 
-The Arrow implementation intentionally keeps the event-count loop outside the memory boundary. A 300M-event run is many bounded batches, not one giant table.
+## DDP
 
-## Distributed training
+Each process owns a shard of the sequence dataset through `DistributedSampler`. CUDA uses NCCL and CPU smoke tests use Gloo.
 
-DDP uses one process per rank and a DistributedSampler. CUDA uses NCCL; CPU correctness tests use Gloo.
+Gradient state is handled by DDP. The adaptive spline grid is not gradient state, so the updated grid and spline coefficients are broadcast from rank 0 after an adaptive update.
 
-The spline grid is non-gradient state. Every adaptive update is performed on the local batch and rank 0 broadcasts the updated grid and spline weights to the other ranks.
-
-A production implementation can replace this rank-0 state update with distributed quantile/statistic aggregation to make grid adaptation itself fully data-parallel.

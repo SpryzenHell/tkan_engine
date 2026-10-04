@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tkan-microstructure-engine"
-version = "0.2.0"
+version = "0.3.0"
 description = "Temporal KAN microstructure modelling with Arrow-scale LOB processing and PyTorch DDP"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -16,7 +16,8 @@ dependencies = [
 
 [project.optional-dependencies]
 data = ["pyarrow>=25,<26"]
-full = ["pyarrow>=25,<26", "lightning>=2.3", "pytest>=8"]
+dev = ["pytest>=8"]
+full = ["pyarrow>=25,<26", "pytest>=8"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

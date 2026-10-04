@@ -49,6 +49,34 @@ def cleanup_ddp():
         dist.destroy_process_group()
 
 
+def _make_optimizer(model: nn.Module, cfg: TrainConfig, device: torch.device):
+    kwargs = {
+        "lr": cfg.lr,
+        "weight_decay": cfg.weight_decay,
+    }
+    if device.type == "cuda":
+        try:
+            return torch.optim.AdamW(model.parameters(), fused=True, **kwargs)
+        except (TypeError, RuntimeError):
+            # Fused AdamW is an optimization, not a correctness requirement.
+            pass
+    return torch.optim.AdamW(model.parameters(), **kwargs)
+
+
+def _make_loader(dataset, cfg: TrainConfig, sampler, device: torch.device):
+    kwargs = {
+        "batch_size": cfg.batch_size,
+        "sampler": sampler,
+        "shuffle": sampler is None,
+        "num_workers": cfg.num_workers,
+        "pin_memory": device.type == "cuda",
+    }
+    if cfg.num_workers > 0:
+        kwargs["persistent_workers"] = True
+        kwargs["prefetch_factor"] = 2
+    return DataLoader(dataset, **kwargs)
+
+
 def train(model, dataset, cfg: TrainConfig, distributed: bool = False, out_dir="results"):
     rank, world, local_rank = setup_ddp(distributed)
 
@@ -73,14 +101,7 @@ def train(model, dataset, cfg: TrainConfig, distributed: bool = False, out_dir="
         else None
     )
 
-    loader = DataLoader(
-        dataset,
-        batch_size=cfg.batch_size,
-        sampler=sampler,
-        shuffle=sampler is None,
-        num_workers=cfg.num_workers,
-        pin_memory=device.type == "cuda",
-    )
+    loader = _make_loader(dataset, cfg, sampler, device)
 
     if distributed and world > 1:
         model = DDP(
@@ -89,11 +110,7 @@ def train(model, dataset, cfg: TrainConfig, distributed: bool = False, out_dir="
             static_graph=False,
         )
 
-    optimizer = torch.optim.AdamW(
-        model.parameters(),
-        lr=cfg.lr,
-        weight_decay=cfg.weight_decay,
-    )
+    optimizer = _make_optimizer(model, cfg, device)
     scaler = torch.amp.GradScaler(
         "cuda",
         enabled=(cfg.amp and device.type == "cuda"),
