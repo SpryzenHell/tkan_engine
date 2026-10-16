@@ -25,7 +25,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[full]"
-      - run: pytest
+      - run: pytest --junitxml=results/pytest-results.xml
+      - name: Save Python-version test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: tkan-test-results-${{ matrix.python-version }}
+          path: results/pytest-results.xml
+          if-no-files-found: error
       - run: python scripts/inversion_benchmark.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6
       - name: Save measured inversion result
         if: matrix.python-version == '3.12'
@@ -123,6 +129,21 @@ jobs:
         with:
           name: tkan-inversion-sweep
           path: results/raw/sweep
+      - name: Download Python 3.10 test report
+        uses: actions/download-artifact@v4
+        with:
+          name: tkan-test-results-3.10
+          path: results/raw/tests/3.10
+      - name: Download Python 3.11 test report
+        uses: actions/download-artifact@v4
+        with:
+          name: tkan-test-results-3.11
+          path: results/raw/tests/3.11
+      - name: Download Python 3.12 test report
+        uses: actions/download-artifact@v4
+        with:
+          name: tkan-test-results-3.12
+          path: results/raw/tests/3.12
       - name: Save the measured experiment inputs used by the report
         env:
           CI_RUN_ID: ${{ github.run_id }}
@@ -131,6 +152,7 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import xml.etree.ElementTree as ET
           from pathlib import Path
 
           pairs = [
@@ -143,11 +165,36 @@ jobs:
               data["source_commit"] = os.environ["SOURCE_COMMIT"]
               Path(target).parent.mkdir(parents=True, exist_ok=True)
               Path(target).write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+          versions = {}
+          for version in ("3.10", "3.11", "3.12"):
+              xml_path = Path(f"results/raw/tests/{version}/pytest-results.xml")
+              root = ET.parse(xml_path).getroot()
+              suites = [node for node in root.iter() if node.tag == "testsuite"]
+              tests = sum(int(node.attrib.get("tests", 0)) for node in suites)
+              failures = sum(int(node.attrib.get("failures", 0)) for node in suites)
+              errors = sum(int(node.attrib.get("errors", 0)) for node in suites)
+              skipped = sum(int(node.attrib.get("skipped", 0)) for node in suites)
+              versions[version] = {
+                  "tests": tests,
+                  "passed": tests - failures - errors - skipped,
+                  "skipped": skipped,
+                  "failures": failures,
+                  "errors": errors,
+              }
+          matrix = {
+              "ci_run_id": int(os.environ["CI_RUN_ID"]),
+              "source_commit": os.environ["SOURCE_COMMIT"],
+              "python_versions": versions,
+          }
+          Path("results/test_matrix.json").write_text(
+              json.dumps(matrix, indent=2), encoding="utf-8"
+          )
           PY
       - run: python -m pip install "matplotlib>=3.8"
       - run: python scripts/render_report.py
       - run: python scripts/update_experiment_report.py
-      - name: Check all eight plots
+      - name: Check all twelve plots
         run: |
           set -euo pipefail
           for plot in inversion_rmse inversion_ic inversion_loss arrow_300m arrow_runtime arrow_batches model_tradeoff ddp_cpu inversion_noise_rmse inversion_noise_ic inversion_seed_rmse inversion_rmse_gain; do
@@ -160,7 +207,7 @@ jobs:
         run: |
           git config user.name "Pirate-Emperor"
           git config user.email "116669078+Pirate-Emperor@users.noreply.github.com"
-          git add README.md docs/EXPERIMENTS.md results/ci_inversion_3000.json results/inversion_sweep.json docs/figures/inversion_rmse.svg docs/figures/inversion_ic.svg docs/figures/inversion_loss.svg docs/figures/arrow_300m.svg docs/figures/arrow_runtime.svg docs/figures/arrow_batches.svg docs/figures/model_tradeoff.svg docs/figures/ddp_cpu.svg docs/figures/inversion_noise_rmse.svg docs/figures/inversion_noise_ic.svg docs/figures/inversion_seed_rmse.svg docs/figures/inversion_rmse_gain.svg
+          git add README.md docs/EXPERIMENTS.md docs/BENCHMARK_STATUS.md results/ci_inversion_3000.json results/inversion_sweep.json results/test_matrix.json docs/figures/inversion_rmse.svg docs/figures/inversion_ic.svg docs/figures/inversion_loss.svg docs/figures/arrow_300m.svg docs/figures/arrow_runtime.svg docs/figures/arrow_batches.svg docs/figures/model_tradeoff.svg docs/figures/ddp_cpu.svg docs/figures/inversion_noise_rmse.svg docs/figures/inversion_noise_ic.svg docs/figures/inversion_seed_rmse.svg docs/figures/inversion_rmse_gain.svg
           if git diff --cached --quiet; then
             echo "Plot files are already current."
           else
