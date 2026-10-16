@@ -184,3 +184,43 @@ def test_arrow_within_rejects_reversed_range_and_keeps_edges():
     assert result.column("x").to_pylist() == [1.0, 2.0]
     with pytest.raises(ValueError, match="lower"):
         ap.q_within(table, "x", 2.0, 1.0)
+
+
+def test_temporal_kan_is_causal_with_respect_to_future_steps():
+    """Appending future LOB observations must not change the last past prediction."""
+    torch.manual_seed(20261017)
+    model = TemporalKAN(
+        input_dim=4, hidden_dim=8, output_dim=1, depth=2, grid_size=5, dropout=0.0
+    ).eval()
+    prefix = torch.randn(3, 7, 4)
+    future = torch.randn(3, 5, 4) * 3.0
+    with torch.no_grad():
+        prefix_prediction = model(prefix)
+        extended_prediction_at_same_time = model(torch.cat([prefix, future], dim=1))
+    # The model returns the last timestep, so compare by evaluating the same
+    # prefix after appending arbitrary future observations is not the same API.
+    # Instead, append future values and compare each prefix timestep through a
+    # forward hook on the temporal encoder's final head input.
+    def last_hidden(sequence):
+        hidden = model.encoder.input_proj(sequence)
+        for block in model.encoder.blocks:
+            hidden = block(hidden)
+        return hidden
+    with torch.no_grad():
+        short_hidden = last_hidden(prefix)[:, -1]
+        long_hidden = last_hidden(torch.cat([prefix, future], dim=1))[:, 6]
+    assert torch.allclose(short_hidden, long_hidden, atol=1e-6, rtol=1e-6)
+    assert prefix_prediction.shape == extended_prediction_at_same_time.shape == (3, 1)
+
+
+def test_temporal_kan_output_and_gradients_stay_finite_after_grid_update():
+    torch.manual_seed(20261018)
+    model = TemporalKAN(input_dim=5, hidden_dim=8, output_dim=1, depth=2, grid_size=5)
+    inputs = torch.randn(12, 10, 5) * 0.3 + 1.0
+    model.update_grids(inputs[:4])
+    prediction = model(inputs)
+    loss = prediction.square().mean() + model.regularization_loss()
+    loss.backward()
+    assert prediction.shape == (12, 1)
+    assert torch.isfinite(prediction).all()
+    assert all(p.grad is None or torch.isfinite(p.grad).all() for p in model.parameters())
