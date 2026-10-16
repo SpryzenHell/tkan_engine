@@ -2,7 +2,8 @@ name: tkan-ci
 
 concurrency:
   group: tkan-ci-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Let the report commit finish uploading its artifacts when it triggers a follow-up run.
+  cancel-in-progress: ${{ !startsWith(github.event.head_commit.message || '', 'Refresh benchmark plots') }}
 
 on:
   push:
