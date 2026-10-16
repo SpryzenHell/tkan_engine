@@ -148,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--hidden", type=int, default=16)
     parser.add_argument("--grid-size", type=int, default=6)
-    parser.add_argument("--seeds", default="123,321,456")
+    parser.add_argument("--seeds", default="123,321,456,789,987")
     parser.add_argument("--noise-levels", default="0.04,0.08,0.16")
     parser.add_argument("--out", default="results/inversion_sweep.json")
     args = parser.parse_args(argv)
