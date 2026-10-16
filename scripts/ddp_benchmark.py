@@ -43,6 +43,7 @@ parser.add_argument("--grid-size", type=int, default=12)
 parser.add_argument("--batch-size", type=int, default=1024)
 parser.add_argument("--warmup", type=int, default=10)
 parser.add_argument("--steps", type=int, default=50)
+parser.add_argument("--seed", type=int, default=7)
 parser.add_argument("--distributed", action="store_true")
 parser.add_argument("--no-amp", action="store_true")
 parser.add_argument("--out", default="results/ddp_benchmark.json")
@@ -74,7 +75,11 @@ dataset = make_fixed_dataset(
     args.events,
     args.seq_len,
     args.features,
+    seed=args.seed,
 )
+torch.manual_seed(args.seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(args.seed)
 sampler = (
     torch.utils.data.DistributedSampler(
         dataset,
@@ -216,6 +221,7 @@ result = {
     "amp_enabled": amp_enabled,
     "optimizer_fused": optimizer_fused,
     "events": args.events,
+    "seed": args.seed,
     "seq_len": args.seq_len,
     "features": args.features,
     "hidden": args.hidden,
