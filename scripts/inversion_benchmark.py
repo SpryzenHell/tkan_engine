@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import time
 from pathlib import Path
 
@@ -197,6 +198,11 @@ def run_benchmark(
         "features": int(X.shape[-1]),
         "seed": seed,
         "noise_std": noise_std,
+        "environment": {
+            "python": platform.python_version(),
+            "torch": str(torch.__version__),
+            "device": "cpu",
+        },
         "ofi_persistence": 0.85,
         "target_units": "synthetic impact basis points",
         "generator": "OFI is tanh of a stationary AR(1) process (phi=0.85); target = 0.9*sin(2.6*OFI) + 0.55*OFI^3 + 0.25*dOFI + N(0, noise_std^2); features use trailing, causal windows.",
