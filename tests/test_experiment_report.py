@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import matplotlib.pyplot as plt
 import pytest
 
+from scripts.render_report import _labeled_boxplot
 from scripts.update_experiment_report import (
     arrow_markdown,
     ddp_markdown,
@@ -96,3 +98,12 @@ def test_replace_block_fails_on_missing_or_duplicate_markers(tmp_path):
     path.write_text("START x START y END", encoding="utf-8")
     with pytest.raises(ValueError, match="one pair"):
         replace_block(path, "START", "END", "new")
+
+
+def test_boxplot_label_argument_matches_installed_matplotlib():
+    fig, ax = plt.subplots()
+    try:
+        _labeled_boxplot(ax, [[1.0, 1.2, 1.4], [0.8, 0.9, 1.0]], ["MLP", "T-KAN"])
+        assert [tick.get_text() for tick in ax.get_xticklabels()] == ["MLP", "T-KAN"]
+    finally:
+        plt.close(fig)
