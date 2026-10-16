@@ -102,7 +102,7 @@ jobs:
       - run: python -m pip install -e ".[full]"
       - name: Run seed and noise sensitivity sweep
         run: |
-          python scripts/inversion_sweep.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6 --seeds 123,321,456 --noise-levels 0.04,0.08,0.16 --out results/inversion_sweep.json
+          python scripts/inversion_sweep.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6 --seeds 123,321,456,789,987 --noise-levels 0.04,0.08,0.16 --out results/inversion_sweep.json
       - uses: actions/upload-artifact@v4
         with:
           name: tkan-inversion-sweep
