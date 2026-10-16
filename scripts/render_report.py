@@ -361,7 +361,7 @@ def main() -> int:
                 for row in group
             ])
         fig, ax = plt.subplots(figsize=(8.2, 4.7), constrained_layout=True)
-        ax.boxplot(gain_by_noise, tick_labels=labels)
+        ax.boxplot(gain_by_noise, labels=labels)
         ax.axhline(0.0, linewidth=1, linestyle="--")
         ax.set_xlabel("Target noise standard deviation")
         ax.set_ylabel("MLP RMSE − T-KAN RMSE (bps; positive favours T-KAN)")
