@@ -129,6 +129,21 @@ jobs:
         with:
           name: tkan-inversion-sweep
           path: results/raw/sweep
+      - name: Download fresh Arrow 5M result
+        uses: actions/download-artifact@v4
+        with:
+          name: tkan-arrow-5m
+          path: results/raw/arrow5m
+      - name: Download fresh Arrow 300M result
+        uses: actions/download-artifact@v4
+        with:
+          name: tkan-arrow-300m
+          path: results/raw/arrow300m
+      - name: Download fresh CPU DDP result
+        uses: actions/download-artifact@v4
+        with:
+          name: tkan-ddp-cpu
+          path: results/raw/ddp
       - name: Download Python 3.10 test report
         uses: actions/download-artifact@v4
         with:
@@ -158,6 +173,9 @@ jobs:
           pairs = [
               ("results/raw/inversion/inversion_benchmark.json", "results/ci_inversion_3000.json"),
               ("results/raw/sweep/inversion_sweep.json", "results/inversion_sweep.json"),
+              ("results/raw/arrow5m/arrow_benchmark.json", "results/arrow_benchmark_5m.json"),
+              ("results/raw/arrow300m/arrow_benchmark.json", "results/arrow_benchmark_300m.json"),
+              ("results/raw/ddp/ddp_benchmark.json", "results/ddp_benchmark_cpu.json"),
           ]
           for source, target in pairs:
               data = json.loads(Path(source).read_text(encoding="utf-8"))
