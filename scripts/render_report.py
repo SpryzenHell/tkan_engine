@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 from pathlib import Path
 
@@ -23,6 +24,16 @@ def load(path: Path) -> dict:
     if not isinstance(data, dict):
         raise ValueError(f"Expected a JSON object in {path}")
     return data
+
+
+def _labeled_boxplot(ax, values, labels) -> None:
+    """Use the correct boxplot tick-label argument for the installed Matplotlib."""
+    label_key = (
+        "tick_labels"
+        if "tick_labels" in inspect.signature(ax.boxplot).parameters
+        else "labels"
+    )
+    ax.boxplot(values, **{label_key: labels})
 
 
 def _parameter_count(result: dict, model_name: str) -> int:
@@ -361,7 +372,7 @@ def main() -> int:
                 for row in group
             ])
         fig, ax = plt.subplots(figsize=(8.2, 4.7), constrained_layout=True)
-        ax.boxplot(gain_by_noise, labels=labels)
+        _labeled_boxplot(ax, gain_by_noise, labels)
         ax.axhline(0.0, linewidth=1, linestyle="--")
         ax.set_xlabel("Target noise standard deviation")
         ax.set_ylabel("MLP RMSE − T-KAN RMSE (bps; positive favours T-KAN)")
