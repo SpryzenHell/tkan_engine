@@ -6,7 +6,10 @@ from pathlib import Path
 
 import numpy as np
 
-from inversion_benchmark import run_benchmark
+try:
+    from .inversion_benchmark import run_benchmark
+except ImportError:  # direct execution as a script
+    from inversion_benchmark import run_benchmark
 
 
 def parse_csv(text: str, cast):
