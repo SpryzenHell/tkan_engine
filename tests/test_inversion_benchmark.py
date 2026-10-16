@@ -33,9 +33,9 @@ def test_causal_moving_average_validates_shape_and_window():
 def test_inversion_dataset_is_deterministic_and_has_chronological_split():
     first_x, first_y, first_split = make_dataset(400, 8, seed=91, noise_std=0.08)
     second_x, second_y, second_split = make_dataset(400, 8, seed=91, noise_std=0.08)
-    assert first_x.shape == (391, 8, 3)
-    assert first_y.shape == (391,)
-    assert first_split == second_split == int(0.8 * 391)
+    assert first_x.shape == (392, 8, 3)
+    assert first_y.shape == (392,)
+    assert first_split == second_split == int(0.8 * 392)
     np.testing.assert_array_equal(first_x, second_x)
     np.testing.assert_array_equal(first_y, second_y)
 
@@ -69,3 +69,23 @@ def test_report_accepts_actual_benchmark_and_saved_result_schemas():
 def test_report_fails_clearly_if_parameter_count_is_missing():
     with pytest.raises(ValueError, match="parameter count"):
         _parameter_count({"mlp": {}}, "mlp")
+
+
+def test_sweep_summary_calculates_paired_rmse_gains():
+    from scripts.inversion_sweep import summarize
+
+    runs = [
+        {"noise_std": 0.08, "seed": 1,
+         "mlp": {"test_rmse_bps": 1.0, "test_ic": 0.2, "test_mse_bps2": 1.0, "parameters": 10},
+         "tkan": {"test_rmse_bps": 0.8, "test_ic": 0.3, "test_mse_bps2": 0.64, "parameters": 20}},
+        {"noise_std": 0.08, "seed": 2,
+         "mlp": {"test_rmse_bps": 0.9, "test_ic": 0.25, "test_mse_bps2": 0.81, "parameters": 10},
+         "tkan": {"test_rmse_bps": 0.95, "test_ic": 0.24, "test_mse_bps2": 0.9025, "parameters": 20}},
+    ]
+    summary = summarize(runs, [0.08])
+    assert len(summary) == 1
+    result = summary[0]
+    assert result["n_seeds"] == 2
+    assert result["paired_rmse_gain_mlp_minus_tkan"]["tkan_wins"] == 1
+    assert result["paired_rmse_gain_mlp_minus_tkan"]["mlp_wins"] == 1
+    assert result["paired_rmse_gain_mlp_minus_tkan"]["mean_bps"] == pytest.approx(0.075)
