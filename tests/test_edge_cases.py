@@ -194,23 +194,21 @@ def test_temporal_kan_is_causal_with_respect_to_future_steps():
     ).eval()
     prefix = torch.randn(3, 7, 4)
     future = torch.randn(3, 5, 4) * 3.0
-    with torch.no_grad():
-        prefix_prediction = model(prefix)
-        extended_prediction_at_same_time = model(torch.cat([prefix, future], dim=1))
-    # The model returns the last timestep, so compare by evaluating the same
-    # prefix after appending arbitrary future observations is not the same API.
-    # Instead, append future values and compare each prefix timestep through a
-    # forward hook on the temporal encoder's final head input.
-    def last_hidden(sequence):
+    def all_hidden(sequence):
         hidden = model.encoder.input_proj(sequence)
         for block in model.encoder.blocks:
             hidden = block(hidden)
         return hidden
+
     with torch.no_grad():
-        short_hidden = last_hidden(prefix)[:, -1]
-        long_hidden = last_hidden(torch.cat([prefix, future], dim=1))[:, 6]
-    assert torch.allclose(short_hidden, long_hidden, atol=1e-6, rtol=1e-6)
-    assert prefix_prediction.shape == extended_prediction_at_same_time.shape == (3, 1)
+        short_prediction = model.encoder.head(all_hidden(prefix)[:, -1])
+        extended_prediction_at_same_time = model.encoder.head(
+            all_hidden(torch.cat([prefix, future], dim=1))[:, 6]
+        )
+    assert short_prediction.shape == extended_prediction_at_same_time.shape == (3, 1)
+    assert torch.allclose(
+        short_prediction, extended_prediction_at_same_time, atol=1e-6, rtol=1e-6
+    )
 
 
 def test_temporal_kan_output_and_gradients_stay_finite_after_grid_update():
