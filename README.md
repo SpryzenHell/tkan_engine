@@ -27,12 +27,12 @@ This experiment fits a known nonlinear target and compares a small MLP with T-KA
 
 Configuration: 3,000 observations, sequence length 16, chronological 80/20 split, 5 epochs, batch size 128, hidden dimension 16, and spline grid size 6.
 
+<!-- INVERSION_METRICS_START -->
 | Model | Parameters | Test MSE (bps²) | Test RMSE (bps) | Test IC |
 |---|---:|---:|---:|---:|
-| MLP | 801 | 0.75995 | 0.87175 | 0.75018 |
-| T-KAN | 3,266 | 0.28884 | 0.53744 | 0.86401 |
-
-On this fixed synthetic test, T-KAN reduced RMSE by about 38.4% and improved the information coefficient by about 0.114. Its parameter count is larger, so the comparison is about prediction quality for this target rather than parameter efficiency.
+| MLP | — | — | — | — |
+| T-KAN | — | — | — | — |
+<!-- INVERSION_METRICS_END -->
 
 ![Test RMSE comparison](docs/figures/inversion_rmse.svg)
 
@@ -42,7 +42,15 @@ On this fixed synthetic test, T-KAN reduced RMSE by about 38.4% and improved the
 
 ![Parameter count and test error](docs/figures/model_tradeoff.svg)
 
-The run details and training history are stored in `results/ci_inversion_3000.json`.
+The run details and training history are stored in results/ci_inversion_3000.json.
+
+### Seed and noise sensitivity
+
+A separate experiment repeats the MLP and T-KAN comparison across several random seeds and target-noise levels. It reports mean test error, run-to-run standard deviation, information coefficient, and the paired RMSE difference for each noise level.
+
+<!-- INVERSION_SWEEP_START -->
+The multi-seed sensitivity sweep will be recorded in results/inversion_sweep.json and summarized here after the CI experiment completes.
+<!-- INVERSION_SWEEP_END -->
 
 ### Apache Arrow event processing
 
