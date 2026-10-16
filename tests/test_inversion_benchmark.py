@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+import torch
 
-from scripts.inversion_benchmark import causal_moving_average, make_dataset
+from scripts.inversion_benchmark import MLP, causal_moving_average, make_dataset, score
 from scripts.render_report import _parameter_count
 
 
@@ -89,3 +90,15 @@ def test_sweep_summary_calculates_paired_rmse_gains():
     assert result["paired_rmse_gain_mlp_minus_tkan"]["tkan_wins"] == 1
     assert result["paired_rmse_gain_mlp_minus_tkan"]["mlp_wins"] == 1
     assert result["paired_rmse_gain_mlp_minus_tkan"]["mean_bps"] == pytest.approx(0.075)
+
+
+def test_score_moves_inputs_to_the_model_device():
+    rng = np.random.default_rng(55)
+    X = rng.normal(size=(24, 8, 3)).astype(np.float32)
+    y = rng.normal(size=24).astype(np.float32)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = MLP(features=3, seq_len=8, hidden=8).to(device)
+    metrics = score(model, X, y, split=16)
+    assert metrics["test_mse_bps2"] >= 0
+    assert np.isfinite(metrics["test_rmse_bps"])
+    assert np.isfinite(metrics["test_ic"])
