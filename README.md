@@ -141,7 +141,7 @@ The test suite covers spline basis shapes and sums, forward/backward gradients, 
 
 ```shell
 python scripts/inversion_benchmark.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6
-python scripts/inversion_sweep.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6 --seeds 123,321,456 --noise-levels 0.04,0.08,0.16
+python scripts/inversion_sweep.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6 --seeds 123,321,456,789,987 --noise-levels 0.04,0.08,0.16
 ```
 
 The OFI signal is generated from a stationary AR(1) process with persistence 0.85, then passed through tanh. The target is:
@@ -212,7 +212,7 @@ The workflow needs a matching runner that is online and has a working NVIDIA dri
 
 ## Continuous integration
 
-The CI workflow checks Python 3.10, 3.11 and 3.12; runs unit tests and the nonlinear inversion benchmark; executes 5M- and 300M-event Arrow paths; and runs a two-rank CPU DDP smoke test. The report job records the current single-run metrics and a nine-run seed/noise sensitivity sweep, generates twelve SVG plots from the saved JSON values, and attaches PNG copies as an action artifact.
+The CI workflow checks Python 3.10, 3.11 and 3.12; runs unit tests and the nonlinear inversion benchmark; executes 5M- and 300M-event Arrow paths; and runs a two-rank CPU DDP smoke test. The report job records the current single-run metrics and a fifteen-run seed/noise sensitivity sweep, generates twelve SVG plots from the saved JSON values, and attaches PNG copies as an action artifact.
 
 ## Figures and saved results
 
