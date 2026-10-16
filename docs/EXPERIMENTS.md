@@ -10,14 +10,22 @@ The target is generated from the order-flow imbalance feature and its change:
 
 The latest recorded experiment used 3,000 observations, 16-step sequences, a chronological 80/20 split, five epochs, and a batch size of 128. It was measured in [GitHub Actions run 38927224698](https://github.com/SpryzenHell/tkan_engine/actions/runs/38927224698); all seven jobs in that run passed.
 
+<!-- INVERSION_METRICS_START -->
 | Model | Parameters | Test MSE (bps²) | Test RMSE (bps) | Test IC |
 |---|---:|---:|---:|---:|
-| MLP | 801 | 0.7599496 | 0.8717509 | 0.7501843 |
-| T-KAN | 3,266 | 0.2888439 | 0.5374420 | 0.8640117 |
+| MLP | — | — | — | — |
+| T-KAN | — | — | — | — |
+<!-- INVERSION_METRICS_END -->
 
-The T-KAN result is lower error on this generated target. This is evidence for this controlled experiment only; it is not an exchange-data result or a trading-alpha claim.
+Source: results/ci_inversion_3000.json.
 
-Source: `results/ci_inversion_3000.json`.
+## Seed and noise sensitivity
+
+The companion sensitivity sweep repeats the model comparison across several seeds and target-noise levels. The generated report includes mean and standard deviation for test RMSE and information coefficient, paired per-seed RMSE differences, training times, and all individual run metrics.
+
+<!-- INVERSION_SWEEP_START -->
+The sweep table and four plots will be filled from results/inversion_sweep.json by the CI report step.
+<!-- INVERSION_SWEEP_END -->
 
 ## Arrow stream sizes
 
