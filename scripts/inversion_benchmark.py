@@ -100,8 +100,15 @@ class MLP(nn.Module):
 
 def score(model, X, y, split):
     model.eval()
+    device = next(model.parameters()).device
     with torch.no_grad():
-        pred = model(torch.from_numpy(X[split:])).squeeze(-1).numpy()
+        pred = (
+            model(torch.from_numpy(X[split:]).to(device))
+            .squeeze(-1)
+            .detach()
+            .cpu()
+            .numpy()
+        )
     true = y[split:]
     mse = float(np.mean((pred - true) ** 2))
     ic = (
@@ -201,7 +208,8 @@ def run_benchmark(
         "environment": {
             "python": platform.python_version(),
             "torch": str(torch.__version__),
-            "device": "cpu",
+            "mlp_device": str(next(mlp.parameters()).device),
+            "tkan_device": str(next(tkan.parameters()).device),
         },
         "ofi_persistence": 0.85,
         "target_units": "synthetic impact basis points",
