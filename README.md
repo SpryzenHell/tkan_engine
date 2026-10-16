@@ -58,12 +58,14 @@ The multi-seed sensitivity sweep will be recorded in results/inversion_sweep.jso
 
 The stress generator creates synthetic event batches and runs columnar feature calculation, filtering, projection and checksum calculation one batch at a time. It does not build a 300M-row table in memory.
 
+<!-- ARROW_METRICS_START -->
 | Events | Batch size | Batches | Elapsed time | Throughput | Selected rows |
 |---:|---:|---:|---:|---:|---:|
 | 5,000,000 | 250,000 | 20 | 0.513 s | 9.752M events/s | 5,000,000 |
 | 300,000,000 | 1,000,000 | 300 | 26.934 s | 11.138M events/s | 300,000,000 |
+<!-- ARROW_METRICS_END -->
 
-The 300M-event result is a synthetic Arrow stress test, not a claim that 300M real exchange messages were replayed. Its checksum was `1,509,462,417.5703695`. The two timings come from separate CI jobs and should not be treated as a controlled hardware scaling comparison.
+The 300M-event result is a synthetic Arrow stress test, not a claim that 300M real exchange messages were replayed. Checksums and environment details are stored with the measured JSON. The two timings come from separate CI jobs and should not be treated as a controlled hardware scaling comparison.
 
 ![Arrow throughput at two event counts](docs/figures/arrow_300m.svg)
 
@@ -75,7 +77,9 @@ Saved run data: `results/arrow_benchmark_5m.json` and `results/arrow_benchmark_3
 
 ### Distributed training smoke test
 
-The recorded two-rank DDP smoke test ran on CPU. It processed 2,560 samples in 21.005 seconds at 121.878 samples/second. This verifies a basic distributed execution path, **not** multi-GPU scaling.
+<!-- DDP_METRICS_START -->
+The current DDP measurement is updated from each completed CI run.
+<!-- DDP_METRICS_END -->
 
 ![Two-rank CPU DDP smoke result](docs/figures/ddp_cpu.svg)
 
@@ -137,6 +141,7 @@ The test suite covers spline basis shapes and sums, forward/backward gradients, 
 
 ```shell
 python scripts/inversion_benchmark.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6
+python scripts/inversion_sweep.py --events 3000 --epochs 5 --batch-size 128 --hidden 16 --grid-size 6 --seeds 123,321,456 --noise-levels 0.04,0.08,0.16
 ```
 
 The OFI signal is generated from a stationary AR(1) process with persistence 0.85, then passed through tanh. The target is:
