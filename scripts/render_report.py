@@ -25,6 +25,20 @@ def load(path: Path) -> dict:
     return data
 
 
+def _parameter_count(result: dict, model_name: str) -> int:
+    """Read parameter counts from both the saved report and raw run schemas."""
+    model = result.get(model_name, {})
+    value = model.get("parameters") if isinstance(model, dict) else None
+    if value is None:
+        value = result.get(f"{model_name}_parameters")
+    if value is None:
+        raise ValueError(
+            f"Missing parameter count for {model_name!r}; expected "
+            f"{model_name}.parameters or {model_name}_parameters"
+        )
+    return int(value)
+
+
 def save_figure(fig, name: str, svg_dir: Path, png_dir: Path) -> None:
     # Fixed SVG metadata makes chart regeneration stable and prevents repeated
     # CI commits caused only by a changing timestamp in the file header.
@@ -68,6 +82,7 @@ def main() -> int:
     parser.add_argument("--arrow-5m", default="results/arrow_benchmark_5m.json")
     parser.add_argument("--arrow-300m", default="results/arrow_benchmark_300m.json")
     parser.add_argument("--ddp", default="results/ddp_benchmark_cpu.json")
+    parser.add_argument("--sweep", default="results/inversion_sweep.json")
     args = parser.parse_args()
 
     svg_dir = Path(args.out)
@@ -184,7 +199,10 @@ def main() -> int:
 
     # 7. Parameter/error trade-off for the two synthetic inversion models.
     fig, ax = plt.subplots(figsize=(8.2, 4.7), constrained_layout=True)
-    params = [mlp["parameters"], tkan["parameters"]]
+    params = [
+        _parameter_count(inversion, "mlp"),
+        _parameter_count(inversion, "tkan"),
+    ]
     rmse_values = [mlp["test_rmse_bps"], tkan["test_rmse_bps"]]
     ax.scatter(params, rmse_values, s=95)
     for label, x, y in zip(models, params, rmse_values):
@@ -269,6 +287,89 @@ def main() -> int:
         ax.set_axisbelow(True)
         save_figure(fig, "gpu_scaling", svg_dir, png_dir)
 
+    # Optional robustness analysis: multiple training seeds and target-noise levels.
+    sweep_path = Path(args.sweep)
+    if sweep_path.exists():
+        sweep = load(sweep_path)
+        runs = sweep.get("runs", [])
+        summaries = sweep.get("summary", [])
+        if not runs or not summaries:
+            raise ValueError(f"The inversion sweep has no runs or summary rows: {sweep_path}")
+
+        noise_levels = [float(row["noise_std"]) for row in summaries]
+        labels = [f"{level:.2f}" for level in noise_levels]
+        mlp_rmse = [float(row["mlp"]["mean_rmse_bps"]) for row in summaries]
+        tkan_rmse = [float(row["tkan"]["mean_rmse_bps"]) for row in summaries]
+        mlp_std = [float(row["mlp"]["std_rmse_bps"]) for row in summaries]
+        tkan_std = [float(row["tkan"]["std_rmse_bps"]) for row in summaries]
+
+        # 9. Prediction error as observation noise increases.
+        fig, ax = plt.subplots(figsize=(8.2, 4.7), constrained_layout=True)
+        ax.errorbar(noise_levels, mlp_rmse, yerr=mlp_std, marker="o", capsize=4, label="MLP")
+        ax.errorbar(noise_levels, tkan_rmse, yerr=tkan_std, marker="s", capsize=4, label="T-KAN")
+        ax.set_xlabel("Target noise standard deviation")
+        ax.set_ylabel("Mean test RMSE (bps; error bars show run-to-run SD)")
+        ax.set_title("Noise sensitivity of next-step prediction")
+        ax.grid(alpha=0.25)
+        ax.legend()
+        save_figure(fig, "inversion_noise_rmse", svg_dir, png_dir)
+
+        # 10. Rank correlation under the same noise sweep.
+        fig, ax = plt.subplots(figsize=(8.2, 4.7), constrained_layout=True)
+        ax.plot(noise_levels, [float(row["mlp"]["mean_ic"]) for row in summaries],
+                marker="o", linewidth=2, label="MLP")
+        ax.plot(noise_levels, [float(row["tkan"]["mean_ic"]) for row in summaries],
+                marker="s", linewidth=2, label="T-KAN")
+        ax.set_xlabel("Target noise standard deviation")
+        ax.set_ylabel("Mean test information coefficient")
+        ax.set_title("Rank-correlation sensitivity to target noise")
+        ax.grid(alpha=0.25)
+        ax.legend()
+        save_figure(fig, "inversion_noise_ic", svg_dir, png_dir)
+
+        # 11. Per-seed errors at the noise level nearest to 0.08.
+        reference_noise = min(noise_levels, key=lambda value: abs(value - 0.08))
+        seed_runs = sorted(
+            (row for row in runs if abs(float(row["noise_std"]) - reference_noise) < 1e-12),
+            key=lambda row: int(row["seed"]),
+        )
+        if seed_runs:
+            fig, ax = plt.subplots(figsize=(9.0, 4.7), constrained_layout=True)
+            x = list(range(len(seed_runs)))
+            width = 0.36
+            ax.bar([value - width / 2 for value in x],
+                   [float(row["mlp"]["test_rmse_bps"]) for row in seed_runs],
+                   width=width, label="MLP")
+            ax.bar([value + width / 2 for value in x],
+                   [float(row["tkan"]["test_rmse_bps"]) for row in seed_runs],
+                   width=width, label="T-KAN")
+            ax.set_xticks(x, [str(int(row["seed"])) for row in seed_runs])
+            ax.set_xlabel("Random seed")
+            ax.set_ylabel("Test RMSE (bps; lower is better)")
+            ax.set_title(f"Seed-to-seed variation at noise SD {reference_noise:.2f}")
+            ax.grid(axis="y", alpha=0.25)
+            ax.set_axisbelow(True)
+            ax.legend()
+            save_figure(fig, "inversion_seed_rmse", svg_dir, png_dir)
+
+        # 12. Paired error differences for each noise level; positive favours T-KAN.
+        gain_by_noise = []
+        for noise in noise_levels:
+            group = [row for row in runs if abs(float(row["noise_std"]) - noise) < 1e-12]
+            gain_by_noise.append([
+                float(row["mlp"]["test_rmse_bps"]) - float(row["tkan"]["test_rmse_bps"])
+                for row in group
+            ])
+        fig, ax = plt.subplots(figsize=(8.2, 4.7), constrained_layout=True)
+        ax.boxplot(gain_by_noise, tick_labels=labels)
+        ax.axhline(0.0, linewidth=1, linestyle="--")
+        ax.set_xlabel("Target noise standard deviation")
+        ax.set_ylabel("MLP RMSE − T-KAN RMSE (bps; positive favours T-KAN)")
+        ax.set_title("Paired prediction-error differences across seeds")
+        ax.grid(axis="y", alpha=0.25)
+        ax.set_axisbelow(True)
+        save_figure(fig, "inversion_rmse_gain", svg_dir, png_dir)
+
     expected = {
         "inversion_rmse.svg",
         "inversion_ic.svg",
@@ -279,11 +380,23 @@ def main() -> int:
         "model_tradeoff.svg",
         "ddp_cpu.svg",
     }
+    if sweep_path.exists():
+        expected.update({
+            "inversion_noise_rmse.svg",
+            "inversion_noise_ic.svg",
+            "inversion_seed_rmse.svg",
+            "inversion_rmse_gain.svg",
+        })
     missing = expected - {path.name for path in svg_dir.glob("*.svg")}
     if missing:
         raise RuntimeError(f"Plot generation failed; missing: {sorted(missing)}")
 
-    print(f"Rendered 8 baseline SVG plots to {svg_dir} and PNG copies to {png_dir}")
+    baseline_count = 8
+    sweep_count = 4 if sweep_path.exists() else 0
+    print(
+        f"Rendered {baseline_count} baseline and {sweep_count} sweep SVG plots "
+        f"to {svg_dir}; PNG copies saved to {png_dir}"
+    )
     return 0
 
 
