@@ -25,6 +25,8 @@ except RuntimeError as exc:
     raise SystemExit(2)
 
 payload=r.__dict__
+payload["batch_size"] = a.batch_size
+payload["input"] = a.input
 payload["environment"] = {
     "python": platform.python_version(),
     "platform": platform.platform(),
