@@ -29,18 +29,22 @@ The repeated seed/noise measurements and four additional plots will be recorded 
 
 Both runs process deterministic synthetic batches and release each batch after processing. They demonstrate streaming at scale, not replay of real exchange messages.
 
+<!-- ARROW_METRICS_START -->
 | Events | Batches | Batch size | Elapsed (s) | Events/s | Selected rows |
 |---:|---:|---:|---:|---:|---:|
 | 5,000,000 | 20 | 250,000 | 0.512705 | 9,752,190.8 | 5,000,000 |
 | 300,000,000 | 300 | 1,000,000 | 26.934001 | 11,138,337.6 | 300,000,000 |
+<!-- ARROW_METRICS_END -->
 
 The runs were in separate CI jobs; their rates are host-dependent and should not be read as a controlled scaling comparison. Checksums and environment details are saved in results/arrow_benchmark_5m.json and results/arrow_benchmark_300m.json.
 
 ## DDP CPU smoke test
 
+<!-- DDP_METRICS_START -->
 | World size | Device | Global samples | Wall time (s) | Throughput (samples/s) |
 |---:|---|---:|---:|---:|
 | 2 | CPU | 2,560 | 21.004563 | 121.8783 |
+<!-- DDP_METRICS_END -->
 
 This checks distributed execution on CPU. It is not a GPU throughput or scaling result. Full details are saved in results/ddp_benchmark_cpu.json.
 
