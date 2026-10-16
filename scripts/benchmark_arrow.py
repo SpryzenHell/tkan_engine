@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 from pathlib import Path
 
 from tkan_engine.arrow_pipeline import process_batches, scan_parquet, synthetic_arrow_stream
@@ -24,6 +25,11 @@ except RuntimeError as exc:
     raise SystemExit(2)
 
 payload=r.__dict__
+payload["environment"] = {
+    "python": platform.python_version(),
+    "platform": platform.platform(),
+    "pyarrow": str(__import__("pyarrow").__version__),
+}
 Path("results").mkdir(exist_ok=True)
 Path("results/arrow_benchmark.json").write_text(json.dumps(payload,indent=2))
 print(json.dumps(payload,indent=2))
