@@ -65,7 +65,7 @@ def test_inversion_markdown_reports_measured_counts_and_direction():
 def test_sweep_markdown_reports_repeat_count_and_plots():
     report = sweep_markdown(sample_sweep())
     assert "3 model-pair runs" in report
-    assert "0.2000 ± 0.1000 bps" in report
+    assert "+0.2000 ± 0.1000 bps" in report
     assert "docs/figures/inversion_noise_rmse.svg" in report
     assert "confidence intervals" in report
 
@@ -74,7 +74,7 @@ def test_arrow_and_ddp_tables_use_the_current_artifact_values():
     arrow = arrow_markdown(sample_arrow(5_000_000, 250_000), sample_arrow(300_000_000, 1_000_000))
     ddp = ddp_markdown(sample_ddp())
     assert "5,000,000" in arrow and "300,000,000" in arrow
-    assert "1.000M" in arrow
+    assert "5.000M" in arrow and "300.000M" in arrow
     assert "256" in ddp and "128.000" in ddp
     assert "CPU results do not measure GPU speed" in ddp
 
@@ -84,7 +84,7 @@ def test_validation_table_reports_each_python_version_and_run_link():
                                  sample_arrow(300_000_000, 1_000_000), sample_ddp(), sample_sweep())
     assert "actions/runs/123" in report
     assert "| 3.10 | 43 | 43 | 0 | 0 | 0 |" in report
-    assert "9 model-pair runs" in report
+    assert "3 model-pair runs" in report
     assert "12 SVG charts and 12 PNG copies" in report
 
 
