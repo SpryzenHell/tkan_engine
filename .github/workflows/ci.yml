@@ -225,7 +225,8 @@ jobs:
         run: |
           git config user.name "Pirate-Emperor"
           git config user.email "116669078+Pirate-Emperor@users.noreply.github.com"
-          git add README.md docs/EXPERIMENTS.md docs/BENCHMARK_STATUS.md results/ci_inversion_3000.json results/inversion_sweep.json results/test_matrix.json docs/figures/inversion_rmse.svg docs/figures/inversion_ic.svg docs/figures/inversion_loss.svg docs/figures/arrow_300m.svg docs/figures/arrow_runtime.svg docs/figures/arrow_batches.svg docs/figures/model_tradeoff.svg docs/figures/ddp_cpu.svg docs/figures/inversion_noise_rmse.svg docs/figures/inversion_noise_ic.svg docs/figures/inversion_seed_rmse.svg docs/figures/inversion_rmse_gain.svg
+          git add README.md docs/EXPERIMENTS.md docs/BENCHMARK_STATUS.md results/ci_inversion_3000.json results/inversion_sweep.json results/test_matrix.json results/arrow_benchmark_5m.json results/arrow_benchmark_300m.json results/ddp_benchmark_cpu.json docs/figures/inversion_rmse.svg docs/figures/inversion_ic.svg docs/figures/inversion_loss.svg docs/figures/arrow_300m.svg docs/figures/arrow_runtime.svg docs/figures/arrow_batches.svg docs/figures/model_tradeoff.svg docs/figures/ddp_cpu.svg docs/figures/inversion_noise_rmse.svg docs/figures/inversion_noise_ic.svg docs/figures/inversion_seed_rmse.svg docs/figures/inversion_rmse_gain.svg
+          git add -f results/figures/*.png
           if git diff --cached --quiet; then
             echo "Plot files are already current."
           else
