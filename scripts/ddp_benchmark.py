@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import time
 from pathlib import Path
 
@@ -234,6 +235,11 @@ result = {
         if device.type == "cuda"
         else None
     ),
+    "environment": {
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "torch": str(torch.__version__),
+    },
 }
 
 if rank == 0:
