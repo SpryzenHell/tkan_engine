@@ -187,22 +187,23 @@ def test_arrow_within_rejects_reversed_range_and_keeps_edges():
 
 
 def test_temporal_kan_is_causal_with_respect_to_future_steps():
-    """Appending future LOB observations must not change the last past prediction."""
+    """Appending future LOB observations must not change an earlier prediction."""
     torch.manual_seed(20261017)
     model = TemporalKAN(
         input_dim=4, hidden_dim=8, output_dim=1, depth=2, grid_size=5, dropout=0.0
     ).eval()
     prefix = torch.randn(3, 7, 4)
     future = torch.randn(3, 5, 4) * 3.0
+
     def all_hidden(sequence):
-        hidden = model.encoder.input_proj(sequence)
-        for block in model.encoder.blocks:
+        hidden = model.input_proj(sequence)
+        for block in model.blocks:
             hidden = block(hidden)
         return hidden
 
     with torch.no_grad():
-        short_prediction = model.encoder.head(all_hidden(prefix)[:, -1])
-        extended_prediction_at_same_time = model.encoder.head(
+        short_prediction = model.head(all_hidden(prefix)[:, -1])
+        extended_prediction_at_same_time = model.head(
             all_hidden(torch.cat([prefix, future], dim=1))[:, 6]
         )
     assert short_prediction.shape == extended_prediction_at_same_time.shape == (3, 1)
